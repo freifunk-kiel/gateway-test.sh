@@ -48,7 +48,7 @@ COMMUNITY_TLD=ffki
 
 # Detect Top Level Domain of your community
 echo -n "automatic tld detection."
-for tld in ffki ffhh fffl ffnord fmdk ffe ffhl; do
+for tld in ffki ffnord ffhh fffl fmdk ffe ffhl; do
   # set a break here to disable auto detection:
   # break
   echo -n "."
@@ -239,7 +239,7 @@ cat <<< "$GWLIST" | while IFS=/ read name gw gw_ip6; do
   fi
 
   : "###### DHCP test"
-  if dhcping -q -i -s "$gw"; then
+  if dhcping -q -i -t10 -s "$gw"; then
     echo -n "."
   else
     echo -e " DHCP test: dhcping -q -i -s \"$gw\" ${FAILED}"
