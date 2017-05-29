@@ -48,7 +48,7 @@ COMMUNITY_TLD=ffki
 
 # Detect Top Level Domain of your community
 echo -n "automatic tld detection."
-for tld in ffki ffnord ffhh fffl fmdk ffe ffhl; do
+for tld in ffnord ffki ffhh fffl fmdk ffe ffhl; do
   # set a break here to disable auto detection:
   # break
   echo -n "."
@@ -137,6 +137,32 @@ gw03/10.228.24.1/2a03:2267::201
 gw04/10.228.32.1/2a03:2267::b01"
     TARGET_DNS_COMMUNITY_TLD_RECORD=gw01.$COMMUNITY_TLD
 elif [ $COMMUNITY_TLD = ffnord ]; then # Freifunk Nord
+    # List of gateways to test
+    # service mashine: 0.gw/10.187.1.1/fd42:eb49:c0b5:4242::fd00
+    GWLIST="\
+1.gw/10.187.5.1/fd42:eb49:c0b5:4242::fd01
+2.gw/10.187.9.1/fd42:eb49:c0b5:4242::fd02
+3.gw/10.187.13.1/fd42:eb49:c0b5:4242::fd03
+4.gw/10.187.17.1/fd42:eb49:c0b5:4242::fd04
+5.gw/10.187.21.1/fd42:eb49:c0b5:4242::fd05
+6.gw/10.187.25.1/fd42:eb49:c0b5:4242::fd06
+7.gw/10.187.29.1/fd42:eb49:c0b5:4242::fd07
+8.gw/10.187.33.1/fd42:eb49:c0b5:4242::fd08
+9.gw/10.187.37.1/fd42:eb49:c0b5:4242::fd09
+10.gw/10.187.41.1/fd42:eb49:c0b5:4242::fd10
+11.gw/10.187.45.1/fd42:eb49:c0b5:4242::fd11
+12.gw/10.187.49.1/fd42:eb49:c0b5:4242::fd12
+18.gw/10.187.73.1/fd42:eb49:c0b5:4242::fd18
+19.gw/10.187.77.1/fd42:eb49:c0b5:4242::fd19
+20.gw/10.187.81.1/fd42:eb49:c0b5:4242::fd20"
+    TARGET_DNS_COMMUNITY_TLD_RECORD=0.gw.$COMMUNITY_TLD
+# planned:
+#    13.gw/10.187.53.1/fd42:eb49:c0b5:4242::fd13
+#    14.gw/10.187.57.1/fd42:eb49:c0b5:4242::fd14
+#    15.gw/10.187.61.1/fd42:eb49:c0b5:4242::fd15
+#    16.gw/10.187.65.1/fd42:eb49:c0b5:4242::fd16
+#    17.gw/10.187.69.1/fd42:eb49:c0b5:4242::fd17
+elif [ $COMMUNITY_TLD = ffnord-old ]; then # Freifunk Nord
     # List of gateways to test
     GWLIST="\
 vpn0/10.187.160.1/2a03:2267:4e6f:7264::fd00
@@ -258,7 +284,7 @@ cat <<< "$GWLIST" | while IFS=/ read name gw gw_ip6; do
   if nslookup ${TARGET_DNS_COMMUNITY_TLD_RECORD} ${gw} > /dev/null 2>&1 ; then
     echo -n "."
   else
-    echo -e " Nameserver test: nslookup ${TARGET_DNS_COMMUNITY_TLD_RECORD} ${gw} ${FAILED}"
+    echo -e " Nameserver test (own domain): nslookup ${TARGET_DNS_COMMUNITY_TLD_RECORD} ${gw} ${FAILED}"
     continue
   fi
 
