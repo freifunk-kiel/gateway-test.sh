@@ -242,25 +242,25 @@ cat <<< "$GWLIST" | while IFS=/ read name gw gw_ip6; do
   # -I interface    interface is either an address or an interface name
   # -W timeout      Time to wait for a response in seconds
   # -s packetsize   Specifies the number of data bytes to be sent.  The default is 56
-  if ping6 -c 2 -i .2 -W 2 -q $gw_ip6 > /dev/null 2>&1; then
+  if ping6 -c 2 -i .2 -W 4 -q $gw_ip6 > /dev/null 2>&1; then
     echo -n "."
   else
-    echo -e " ping6 -c 2 -i .2 -W 2 -q $gw_ip6 ${FAILED}"
+    echo -e " ping6 -c 2 -i .2 -W 4 -q $gw_ip6 ${FAILED}"
     continue
   fi
   
-  if ping -c 2 -i .2 -W 2 -q $gw > /dev/null 2>&1; then
+  if ping -c 2 -i .2 -W 4 -q $gw > /dev/null 2>&1; then
     echo -n "."
   else
-    echo -e " ping -c 2 -i .2 -W 2 -q $gw ${FAILED}"
+    echo -e " ping -c 2 -i .2 -W 4 -q $gw ${FAILED}"
     continue
   fi
 
   : "###### Gateway functionality ping"
-  if ping -m ${FWMARK} -I ${INTERFACE} -c 2  -i .2 -W 2 -q $TARGET_HOST > /dev/null 2>&1; then
+  if ping -m ${FWMARK} -I ${INTERFACE} -c 2  -i .2 -W 4 -q $TARGET_HOST > /dev/null 2>&1; then
     echo -n "."
   else
-    echo -e " ping -m ${FWMARK} -I ${INTERFACE} -c 2  -i .2 -W 2 -q $TARGET_HOST ${FAILED}"
+    echo -e " ping -m ${FWMARK} -I ${INTERFACE} -c 2  -i .2 -W 4 -q $TARGET_HOST ${FAILED}"
     continue
   fi
 
@@ -268,7 +268,7 @@ cat <<< "$GWLIST" | while IFS=/ read name gw gw_ip6; do
   if dhcping -q -i -t10 -s "$gw"; then
     echo -n "."
   else
-    echo -e " DHCP test: dhcping -q -i -s \"$gw\" ${FAILED}"
+    echo -e " DHCP test: dhcping -q -i -t10 -s \"$gw\" ${FAILED}"
     continue
   fi
 
@@ -300,7 +300,6 @@ if [ "$VERBOSE" == "TRUE" ]; then
 fi
 
 read -n1 -r -p "Do you want to continue testing different packagesizes? [y/N]" key
-
 if [ "$key" = 'y' ]; then
   : "###### ping with differing packagesizes"
   cat <<< "$GWLIST" | while IFS=/ read name gw gw_ip6; do
@@ -317,7 +316,7 @@ if [ "$key" = 'y' ]; then
     echo -n "reachability ping Test $name $gw ."
     LAST=0
     for i in {50..100..10} {100..1000..100} {1000..1350..10} {1350..1400..1} {1400..1450..10} {1450..1500..1}; do
-      if ssh ping -c 4 -i .01 -W 2 -q $gw > /dev/null 2>&1; then
+      if ssh ping -c 4 -i .01 -W 4 -q $gw > /dev/null 2>&1; then
         if [ $LAST -eq 1 ]; then
           echo " until $i"
           LAST=0
@@ -340,7 +339,7 @@ if [ "$key" = 'y' ]; then
         echo -n "functionality ping Test $name $gw ."
         LAST=0
         for i in {50..100..10} {100..1000..100} {1000..1350..10} {1350..1400..1} {1400..1450..10} {1450..1500..1}; do
-          if ping -m 100 -I ${INTERFACE} -c 4 -i .01 -W 2 -q $TARGET_HOST > /dev/null 2>&1; then
+          if ping -m 100 -I ${INTERFACE} -c 4 -i .01 -W 4 -q $TARGET_HOST > /dev/null 2>&1; then
            if [ $LAST -eq 1 ]; then
               echo " until $i"
               LAST=0
