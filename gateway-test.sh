@@ -299,65 +299,68 @@ if [ "$VERBOSE" == "TRUE" ]; then
   set +x
 fi
 
-: "###### ping with differing packagesizes"
-cat <<< "$GWLIST" | while IFS=/ read name gw gw_ip6; do
-  
-  # clean routing table
-  ip route flush table ${ROUTING_TABLE}
-  # setup routing table
-  ip route add 0.0.0.0/1 via $gw table ${ROUTING_TABLE}
-  ip route add 128.0.0.0/1 via $gw table ${ROUTING_TABLE}
-  ip route replace unreachable default table ${ROUTING_TABLE}
-  
-  #### Gateway reachability
-  echo
-  echo -n "reachability ping Test $name $gw ."
-  LAST=0
-  for i in {50..100..10} {100..1000..100} {1000..1350..10} {1350..1400..1} {1400..1450..10} {1450..1500..1}; do
-    if ssh ping -c 4 -i .01 -W 2 -q $gw > /dev/null 2>&1; then
-      if [ $LAST -eq 1 ]; then
-        echo " until $i"
-        LAST=0
-      fi
-      echo -n "."
-    else
-      if [ $LAST -eq 0 ]; then
-        echo
-        echo -n " no ping from packagesize $i"
-        LAST=1
-      fi
-      #continue 2
-    fi
-    trap "echo; exit;" SIGINT SIGTERM
-  done
-  
-  #### Gateway functionality ping
-  if [ ! $TARGET_DNS_COMMUNITY_TLD_RECORD = "none" ]; then
-      echo
-      echo -n "functionality ping Test $name $gw ."
-      LAST=0
-      for i in {50..100..10} {100..1000..100} {1000..1350..10} {1350..1400..1} {1400..1450..10} {1450..1500..1}; do
-        if ping -m 100 -I ${INTERFACE} -c 4 -i .01 -W 2 -q $TARGET_HOST > /dev/null 2>&1; then
-         if [ $LAST -eq 1 ]; then
-            echo " until $i"
-            LAST=0
-          fi
-          echo -n "."
-        else
-          if [ $LAST -eq 0 ]; then
-            echo
-            echo -n " no ping throught the gateway from packagesize $i"
-            LAST=1
-          fi
-          #continue 2
+read -n1 -r -p "Do you want to continue testing different packagesizes? [y/N]" key
+
+if [ "$key" = 'y' ]; then
+  : "###### ping with differing packagesizes"
+  cat <<< "$GWLIST" | while IFS=/ read name gw gw_ip6; do
+    
+    # clean routing table
+    ip route flush table ${ROUTING_TABLE}
+    # setup routing table
+    ip route add 0.0.0.0/1 via $gw table ${ROUTING_TABLE}
+    ip route add 128.0.0.0/1 via $gw table ${ROUTING_TABLE}
+    ip route replace unreachable default table ${ROUTING_TABLE}
+    
+    #### Gateway reachability
+    echo
+    echo -n "reachability ping Test $name $gw ."
+    LAST=0
+    for i in {50..100..10} {100..1000..100} {1000..1350..10} {1350..1400..1} {1400..1450..10} {1450..1500..1}; do
+      if ssh ping -c 4 -i .01 -W 2 -q $gw > /dev/null 2>&1; then
+        if [ $LAST -eq 1 ]; then
+          echo " until $i"
+          LAST=0
         fi
-        trap "echo; exit;" SIGINT SIGTERM
-      done
-  fi
-done
+        echo -n "."
+      else
+        if [ $LAST -eq 0 ]; then
+          echo
+          echo -n " no ping from packagesize $i"
+          LAST=1
+        fi
+        #continue 2
+      fi
+      trap "echo; exit;" SIGINT SIGTERM
+    done
+    
+    #### Gateway functionality ping
+    if [ ! $TARGET_DNS_COMMUNITY_TLD_RECORD = "none" ]; then
+        echo
+        echo -n "functionality ping Test $name $gw ."
+        LAST=0
+        for i in {50..100..10} {100..1000..100} {1000..1350..10} {1350..1400..1} {1400..1450..10} {1450..1500..1}; do
+          if ping -m 100 -I ${INTERFACE} -c 4 -i .01 -W 2 -q $TARGET_HOST > /dev/null 2>&1; then
+           if [ $LAST -eq 1 ]; then
+              echo " until $i"
+              LAST=0
+            fi
+            echo -n "."
+          else
+            if [ $LAST -eq 0 ]; then
+              echo
+              echo -n " no ping throught the gateway from packagesize $i"
+              LAST=1
+            fi
+            #continue 2
+          fi
+          trap "echo; exit;" SIGINT SIGTERM
+        done
+    fi
+  done
 
-echo
-
+  echo
+fi
 #### Compare SOA records
 echo "SOA records"
 IFS=$'\n'
