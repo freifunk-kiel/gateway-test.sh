@@ -1,14 +1,31 @@
-* This script must be run as root on a mashine that is in freifunk 
-* Before the first start, you have to activate the rp_filter with 
+gateway-test.sh
+===============
+
+* This script must be run as root on a mashine that is in Freifunk 
+* Before the first start, it will tell you to activate the rp_filter with:
 
         sysctl -w net.ipv4.conf.$INTERFACE.rp_filter=0
 
+# Usage
+
+    # dependency
+    apt-get install -y dhcping
+    
+    # clone this repository
+    git clone https://github.com/freifunk-kiel/gateway-test.sh
+    cd gateway-test.sh
+    
+    # start the bash script as root
+    sudo ./gateway-test.sh
+
 # Options
 
-    --help  	show this README.md
-    -v			verbose mode
+    --help  show this README.md
+    -v      verbose mode
 
 # Configuration
+
+If you want to add your own community:
 
 * define a list of gateways to test in the array `DEFAULT_GATEWAYS`
 * define your interface which should be used for pinging a remote host for example `br-freifunk` or `wlan0`
