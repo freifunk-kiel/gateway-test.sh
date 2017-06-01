@@ -233,6 +233,8 @@ ip r | grep default
 
 GATEWAY_SOA=()
 
+PING_INTERVAL=".2" # change this if your system doesn't allow such short ping intervals
+
 cat <<< "$GWLIST" | while IFS=/ read name gw gw_ip6; do
   : "### clean routing table"
   ip route flush table ${ROUTING_TABLE}
@@ -248,25 +250,25 @@ cat <<< "$GWLIST" | while IFS=/ read name gw gw_ip6; do
   # -I interface    interface is either an address or an interface name
   # -W timeout      Time to wait for a response in seconds
   # -s packetsize   Specifies the number of data bytes to be sent.  The default is 56
-  if ping6 -c 2 -i .2 -W 4 -q $gw_ip6 > /dev/null 2>&1; then
+  if ping6 -c 2 -i $PING_INTERVAL -W 4 -q $gw_ip6 > /dev/null 2>&1; then
     echo -n "."
   else
-    echo -e " ping6 -c 2 -i .2 -W 4 -q $gw_ip6 ${FAILED}"
+    echo -e " ping6 -c 2 -i $PING_INTERVAL -W 4 -q $gw_ip6 ${FAILED}"
     continue
   fi
   
-  if ping -c 2 -i .2 -W 4 -q $gw > /dev/null 2>&1; then
+  if ping -c 2 -i $PING_INTERVAL -W 4 -q $gw > /dev/null 2>&1; then
     echo -n "."
   else
-    echo -e " ping -c 2 -i .2 -W 4 -q $gw ${FAILED}"
+    echo -e " ping -c 2 -i $PING_INTERVAL -W 4 -q $gw ${FAILED}"
     continue
   fi
 
   : "###### Gateway functionality ping"
-  if ping -m ${FWMARK} -I ${INTERFACE} -c 2  -i .2 -W 4 -q $TARGET_HOST > /dev/null 2>&1; then
+  if ping -m ${FWMARK} -I ${INTERFACE} -c 2  -i $PING_INTERVAL -W 4 -q $TARGET_HOST > /dev/null 2>&1; then
     echo -n "."
   else
-    echo -e " ping -m ${FWMARK} -I ${INTERFACE} -c 2  -i .2 -W 4 -q $TARGET_HOST ${FAILED}"
+    echo -e " ping -m ${FWMARK} -I ${INTERFACE} -c 2  -i $PING_INTERVAL -W 4 -q $TARGET_HOST ${FAILED}"
     continue
   fi
 
