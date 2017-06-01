@@ -21,6 +21,7 @@ gateway-test.sh
 # Options
 
     --help  show this README.md
+    -g      gatewaylist, for example sudo gateway-test.sh -g "13.gw/10.187.53.1/fd42:eb49:c0b5:4242::fd13"
     -v      verbose mode
 
 # Configuration

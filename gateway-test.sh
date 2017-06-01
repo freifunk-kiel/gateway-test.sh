@@ -152,6 +152,7 @@ elif [ $COMMUNITY_TLD = ffnord ]; then # Freifunk Nord
 10.gw/10.187.41.1/fd42:eb49:c0b5:4242::fd10
 11.gw/10.187.45.1/fd42:eb49:c0b5:4242::fd11
 12.gw/10.187.49.1/fd42:eb49:c0b5:4242::fd12
+13.gw/10.187.53.1/fd42:eb49:c0b5:4242::fd13
 18.gw/10.187.73.1/fd42:eb49:c0b5:4242::fd18
 19.gw/10.187.77.1/fd42:eb49:c0b5:4242::fd19
 20.gw/10.187.81.1/fd42:eb49:c0b5:4242::fd20"
@@ -182,6 +183,11 @@ vpn13/10.187.110.1/2a03:2267:4e6f:7264::fd13
 vpn14/10.187.120.1/2a03:2267:4e6f:7264::fd14
 vpn15/10.187.140.1/2a03:2267:4e6f:7264::fd15"
     TARGET_DNS_COMMUNITY_TLD_RECORD=vpn0.$COMMUNITY_TLD
+fi
+
+if [ "$1" == "-g" ]; then
+  # override GWLIST
+  GWLIST="$2"
 fi
 
 if [ $INTERFACE = "auto" ]; then
